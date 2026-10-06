@@ -21,19 +21,6 @@ Home Assistant 自定义集成：把房贷、车贷、消费贷、租赁房屋�
 
    ```
    /config/custom_components/household_expenses/
-   ├── __init__.py
-   ├── calc.py
-   ├── config_flow.py
-   ├── const.py
-   ├── coordinator.py
-   ├── sensor.py
-   ├── storage.py
-   ├── manifest.json
-   ├── strings.json
-   ├── translations/
-   │   ├── en.json
-   │   └── zh-Hans.json
-   └── brand/            # 集成图标（icon.png / dark_icon.png）
    ```
 
    > 目录名必须是 `household_expenses`（与 `manifest.json` 里的 `domain` 一致），改名会导致集成加载失败。
@@ -52,25 +39,6 @@ Home Assistant 自定义集成：把房贷、车贷、消费贷、租赁房屋�
 2. 仓库地址填本项目的 GitHub 地址，类别选「集成」，添加
 3. 在 HACS 里搜索「家庭支出」→ 下载 → **重启 Home Assistant**
 4. 之后同方式 A 的第 3、4 步
-
-### 4. 在仪表盘上显示（可选）
-
-集成本身只提供实体，用任意卡片（实体卡、统计图、ApexCharts…）都能读。若已安装「消逝卡」前端包（xiaoshi），它会自动带上本集成的配套卡片，直接在仪表盘添加即可：
-
-```yaml
-# 完整的家庭支出卡片：表头 + 日历 / 日图表 / 月图表 / 饼图
-type: custom:xiaoshi-household-expenses
-```
-
-```yaml
-# 入口按钮：只显示一枚小按钮，点击弹出上面那张卡片
-type: custom:xiaoshi-household-expenses-button
-emoji: 💰️
-entry_text: 家庭
-entities:                     # 按钮与弹出的卡片共用这一份配置
-  mortgage: sensor.household_expenses_mortgage_xxxxxxxx
-  electric: sensor.state_grid_xxxxxxxxxxxx
-```
 
 ---
 
