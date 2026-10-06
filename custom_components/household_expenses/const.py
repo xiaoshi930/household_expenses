@@ -65,6 +65,16 @@ ITEM_TYPES: dict[str, dict] = {
         "onetime": (CONF_UPFRONT, "首付款金额"),
         "has_remaining": True,
     },
+    "parking": {
+        "name": "车位",
+        "kind": KIND_LOAN,
+        "direction": DIRECTION_EXPENSE,
+        "icon": "mdi:parking",
+        "amount_key": "amount_repay",
+        "amount_label": "每月还款金额",
+        "onetime": (CONF_UPFRONT, "首付款金额"),
+        "has_remaining": True,
+    },
     "car_loan": {
         "name": "车贷",
         "kind": KIND_LOAN,
@@ -150,9 +160,9 @@ ITEM_TYPES: dict[str, dict] = {
 DEFAULT_ICON = "mdi:wallet"
 
 # 只出「每月 / 每年」明细、不出每日明细的类型。
-# 这四类的每日金额由前端 UI 现场计算（月金额 ÷ 当月天数），后端不再吐 daylist
+# 这几类的每日金额由前端 UI 现场计算（月金额 ÷ 当月天数），后端不再吐 daylist
 # —— 房贷日明细曾把实体属性撑到 ~470 KB，远超 Recorder 的 16384 字节上限。
-NO_DAILY_TYPES = ("mortgage", "car_loan", "consumer_loan", "property_fee")
+NO_DAILY_TYPES = ("mortgage", "parking", "car_loan", "consumer_loan", "property_fee")
 
 # ----------------------------------------------------------------------
 # 实体属性 / 快照文件
