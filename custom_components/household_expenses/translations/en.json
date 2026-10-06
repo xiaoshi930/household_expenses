@@ -132,7 +132,7 @@
       },
       "extra": {
         "title": "Other parameters",
-        "description": "Parameters differ per expense type: loans have down payment, loan term, outstanding principal and repayment day; rent/parking have an agency or custody fee; property fee has a paid-until month; heating fee has a paid amount.",
+        "description": "Parameters differ per expense type: loans have down payment, loan term, outstanding principal and repayment day; rent/parking have an agency or custody fee; property fee has a paid-until month; heating fee has a remaining amount.",
         "data": {
           "upfront": "Down payment",
           "loan_months": "Loan term",
@@ -142,7 +142,7 @@
           "agency_fee": "Agency fee",
           "custody_fee": "Custody fee",
           "paid_until": "Paid until",
-          "paid_amount": "Amount paid"
+          "heating_remaining": "Remaining amount"
         },
         "data_description": {
           "upfront": "Down payment, amortised over the loan term.",
@@ -153,7 +153,7 @@
           "agency_fee": "Agency fee, amortised over the period.",
           "custody_fee": "Custody fee, amortised over the period.",
           "paid_until": "Format YYYY-MM, e.g. 2026-12.",
-          "paid_amount": "How much of this heating season has been paid; remainder = amount paid − the part accrued day by day up to today. Leave empty to hide the remainder."
+          "heating_remaining": "How much is left for this heating season. The sensor shows this number as-is, without any conversion. Leave empty for 0."
         }
       },
       "delete": {

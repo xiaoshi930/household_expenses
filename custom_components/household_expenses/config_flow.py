@@ -22,13 +22,13 @@ from homeassistant.util import dt as dt_util
 
 from .const import (
     CONF_BALANCE_DATE,
+    CONF_HEATING_REMAINING,
     CONF_ITEM_ID,
     CONF_ITEM_NAME,
     CONF_ITEM_OBJECT_ID,
     CONF_ITEM_TYPE,
     CONF_ITEMS,
     CONF_LOAN_MONTHS,
-    CONF_PAID_AMOUNT,
     CONF_PAID_UNTIL,
     CONF_PERIOD_AMOUNT,
     CONF_PERIOD_END,
@@ -387,15 +387,15 @@ def _extra_schema(item_type: str, item: dict[str, Any] | None = None) -> vol.Sch
                 selector.TextSelectorConfig(type=selector.TextSelectorType.TEXT)
             )
         elif kind == KIND_HEATING:
-            # 「已缴金额」：这个采暖季已经交了多少钱。
-            # 剩余金额 = 已缴金额 − 截至今天按天摊分掉的应缴部分；留空 = 不显示。
-            paid = item.get(CONF_PAID_AMOUNT)
+            # 「剩余金额」：录多少，实体上的剩余金额就是多少，不做任何换算。
+            # 可留空（留空 = 0）。
+            remaining = item.get(CONF_HEATING_REMAINING)
             fields[
                 vol.Optional(
-                    CONF_PAID_AMOUNT,
+                    CONF_HEATING_REMAINING,
                     description={
                         "suggested_value": (
-                            None if paid in (None, "") else _as_float(paid)
+                            None if remaining in (None, "") else _as_float(remaining)
                         )
                     },
                 )
@@ -819,15 +819,15 @@ class HouseholdExpensesOptionsFlow(OptionsFlow):
                 else:
                     payload[CONF_PAID_UNTIL] = raw_month
             if (ITEM_TYPES.get(item_type) or {}).get("kind") == KIND_HEATING:
-                # 「已缴金额」留空 = 未填：必须同时删掉草稿里的旧值，
+                # 「剩余金额」留空 = 未填：必须同时删掉草稿里的旧值，
                 # 否则 draft.update(payload) 会沿用上一次录入的值（清空无效）。
-                raw_paid = payload.pop(CONF_PAID_AMOUNT, None)
-                draft.pop(CONF_PAID_AMOUNT, None)
+                raw_remaining = payload.pop(CONF_HEATING_REMAINING, None)
+                draft.pop(CONF_HEATING_REMAINING, None)
                 if not (
-                    raw_paid is None
-                    or (isinstance(raw_paid, str) and not raw_paid.strip())
+                    raw_remaining is None
+                    or (isinstance(raw_remaining, str) and not raw_remaining.strip())
                 ):
-                    payload[CONF_PAID_AMOUNT] = round(_as_float(raw_paid), 2)
+                    payload[CONF_HEATING_REMAINING] = round(_as_float(raw_remaining), 2)
             if not errors:
                 draft.update(payload)
                 self._draft = draft

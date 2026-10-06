@@ -31,10 +31,9 @@ CONF_BALANCE_DATE = "balance_date"
 CONF_AGENCY_FEE = "agency_fee"
 CONF_CUSTODY_FEE = "custody_fee"
 CONF_PAID_UNTIL = "paid_until"
-# 取暖费「已缴金额」：这个采暖季已经交了多少钱。
-# 「剩余金额」= 已缴金额 − 截至今天已经摊分掉的应缴部分（按天摊分）。
-# 留空（老配置）时该项的剩余金额仍是 0，语义不变。
-CONF_PAID_AMOUNT = "paid_amount"
+# 取暖费「剩余金额」：录多少，实体上的剩余金额就是多少，**不做任何换算**。
+# 留空（含老配置）→ 0。
+CONF_HEATING_REMAINING = "heating_remaining"
 
 # ----------------------------------------------------------------------
 # 收支方向
