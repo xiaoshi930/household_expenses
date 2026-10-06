@@ -1,0 +1,10 @@
+{
+  "domain": "household_expenses",
+  "name": "家庭支出",
+  "codeowners": ["xiaoshi930"],
+  "config_flow": true,
+  "documentation": "https://github.com/xiaoshi930/household_expenses",
+  "iot_class": "calculated",
+  "version": "1.0.7",
+  "homeassistant": "2025.1.0"
+}

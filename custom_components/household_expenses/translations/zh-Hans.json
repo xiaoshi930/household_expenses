@@ -1,0 +1,181 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "家庭支出",
+        "description": "首次添加无需录入任何内容，提交即可完成。"
+      }
+    },
+    "abort": {
+      "already_configured": "家庭支出已添加，如需增删改费用项请点击集成卡片上的「配置」。"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "家庭支出",
+        "description": "增加、修改或删除费用项。改动改完点「完成并保存」生效（HA 必需的收尾动作）。",
+        "menu_options": {
+          "add": "增加费用项",
+          "edit": "修改费用项",
+          "delete": "删除费用项",
+          "done": "完成并保存"
+        }
+      },
+      "add": {
+        "title": "增加费用项",
+        "description": "选择费用类型，后续按类型录入对应参数。",
+        "data": {
+          "type": "费用类型"
+        }
+      },
+      "add_name": {
+        "title": "费用项名称",
+        "description": "同一类型可以添加多个（例如两笔房贷），名称需互不相同。",
+        "data": {
+          "name": "名称"
+        }
+      },
+      "edit": {
+        "title": "修改费用项",
+        "description": "选择要修改的费用项。",
+        "data": {
+          "index": "费用项"
+        }
+      },
+      "edit_menu": {
+        "title": "修改费用项",
+        "description": "选一项改，改完自动生效，可直接返回。",
+        "menu_options": {
+          "edit_name": "修改名称",
+          "periods": "管理期间与金额",
+          "extra": "修改其他参数",
+          "back": "返回"
+        }
+      },
+      "edit_name": {
+        "title": "修改名称",
+        "data": {
+          "name": "名称"
+        }
+      },
+      "periods": {
+        "title": "期间与金额",
+        "description": "可加多段期间，用于表达「金额会变」的情况（例如利率调整后每月还款金额变化）。",
+        "menu_options": {
+          "period_add": "增加期间",
+          "period_edit": "修改期间",
+          "period_del": "删除期间",
+          "back": "返回"
+        }
+      },
+      "period_add": {
+        "title": "录入期间",
+        "description": "逐段录入期间与金额。要录多段就勾「再录一段期间」，不勾直接进下一步。",
+        "data": {
+          "start": "开始日期",
+          "end": "结束日期",
+          "amount": "金额",
+          "amount_repay": "每月还款金额",
+          "amount_rent": "每月租赁金额",
+          "amount_sublet": "每月出租金额",
+          "amount_property": "每月金额",
+          "amount_heating": "期间总金额",
+          "more": "再录一段期间（金额变化时用）"
+        },
+        "data_description": {
+          "start": "格式 YYYY-MM-DD。",
+          "end": "留空 = 长期（没有结束日期）。",
+          "amount_repay": "这段期间内每月的还款金额。",
+          "amount_rent": "这段期间内每月的租赁金额。",
+          "amount_sublet": "这段期间内每月的出租金额。",
+          "amount_property": "这段期间内每月的物业费金额。",
+          "amount_heating": "这段期间的取暖费合计金额（按天摊到期间内）。",
+          "more": "勾上会再弹一次本表单，用来追加下一段（例如利率调整后的新金额）。"
+        }
+      },
+      "period_edit": {
+        "title": "修改期间",
+        "description": "选择要修改的期间。",
+        "data": {
+          "index": "期间"
+        }
+      },
+      "period_edit_form": {
+        "title": "修改期间",
+        "data": {
+          "start": "开始日期",
+          "end": "结束日期",
+          "amount": "金额",
+          "amount_repay": "每月还款金额",
+          "amount_rent": "每月租赁金额",
+          "amount_sublet": "每月出租金额",
+          "amount_property": "每月金额",
+          "amount_heating": "期间总金额"
+        },
+        "data_description": {
+          "start": "格式 YYYY-MM-DD。",
+          "end": "留空 = 长期（没有结束日期）。",
+          "amount_repay": "这段期间内每月的还款金额。",
+          "amount_rent": "这段期间内每月的租赁金额。",
+          "amount_sublet": "这段期间内每月的出租金额。",
+          "amount_property": "这段期间内每月的物业费金额。",
+          "amount_heating": "这段期间的取暖费合计金额（按天摊到期间内）。"
+        }
+      },
+      "period_del": {
+        "title": "删除期间",
+        "description": "选择要删除的期间。",
+        "data": {
+          "index": "期间"
+        }
+      },
+      "extra": {
+        "title": "其他参数",
+        "description": "按该费用类型的参数逐项录入：贷款类有首付款金额、贷款期间、剩余金额、还款日；租赁/车位类有中介费或保管费；物业费有缴纳截止月份；取暖费没有额外参数。",
+        "data": {
+          "upfront": "首付款金额",
+          "loan_months": "贷款期间",
+          "remaining": "剩余金额",
+          "repay_day": "还款日",
+          "balance_date": "剩余金额日期",
+          "agency_fee": "中介费",
+          "custody_fee": "保管费",
+          "paid_until": "缴纳截止月份"
+        },
+        "data_description": {
+          "upfront": "首付款金额（按贷款期间摊销）。",
+          "loan_months": "贷款总期数，单位：月。",
+          "remaining": "当前未还本金。",
+          "repay_day": "每月扣款日，填日号即可，例如 21。",
+          "balance_date": "上面这笔剩余金额是哪天查到的；从这天之后，每到一个还款日就自动扣掉当期月供。",
+          "agency_fee": "中介费（按期间摊销）。",
+          "custody_fee": "保管费（按期间摊销）。",
+          "paid_until": "格式 YYYY-MM，例如 2026-12。"
+        }
+      },
+      "delete": {
+        "title": "删除费用项",
+        "description": "选择要删除的费用项。",
+        "data": {
+          "index": "费用项"
+        }
+      },
+      "delete_confirm": {
+        "title": "确认删除",
+        "description": "删除后该费用项的实体与历史快照都会被移除，确定继续吗？",
+        "data": {
+          "confirm": "确认删除"
+        }
+      }
+    },
+    "error": {
+      "end_before_start": "结束日期不能早于开始日期。",
+      "name_exists": "该名称已存在，请换一个名称。",
+      "invalid_month": "月份格式应为 YYYY-MM，例如 2026-10。",
+      "last_period": "至少要保留一段期间。",
+      "date_required": "请选择开始日期。",
+      "invalid_date": "日期格式不正确，请选择有效日期。"
+    }
+  }
+}

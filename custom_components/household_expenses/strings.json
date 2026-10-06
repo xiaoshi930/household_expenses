@@ -1,0 +1,181 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Household Expenses",
+        "description": "No input is required for the initial setup — just submit to finish."
+      }
+    },
+    "abort": {
+      "already_configured": "Household Expenses is already set up. Use \"Configure\" to add, edit or delete items."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Household Expenses",
+        "description": "Add, edit or remove expense items. Changes take effect when you press “Finish and save” (the closing step required by Home Assistant).",
+        "menu_options": {
+          "add": "Add item",
+          "edit": "Edit item",
+          "delete": "Delete item",
+          "done": "Done and save"
+        }
+      },
+      "add": {
+        "title": "Add item",
+        "description": "Pick the expense type; the following steps ask for its parameters.",
+        "data": {
+          "type": "Type"
+        }
+      },
+      "add_name": {
+        "title": "Item name",
+        "description": "You can add several items of the same type (e.g. two mortgages); names must be unique.",
+        "data": {
+          "name": "Name"
+        }
+      },
+      "edit": {
+        "title": "Edit item",
+        "description": "Select the item to edit.",
+        "data": {
+          "index": "Item"
+        }
+      },
+      "edit_menu": {
+        "title": "Edit item",
+        "description": "Pick what to change; every change takes effect immediately.",
+        "menu_options": {
+          "edit_name": "Rename",
+          "periods": "Manage periods & amounts",
+          "extra": "Edit other parameters",
+          "back": "Back"
+        }
+      },
+      "edit_name": {
+        "title": "Rename",
+        "data": {
+          "name": "Name"
+        }
+      },
+      "periods": {
+        "title": "Periods and amounts",
+        "description": "Add as many periods as you need, e.g. when the monthly amount changes after a rate adjustment.",
+        "menu_options": {
+          "period_add": "Add period",
+          "period_edit": "Edit period",
+          "period_del": "Delete period",
+          "back": "Back"
+        }
+      },
+      "period_add": {
+        "title": "Add period",
+        "description": "Enter the period and its amount. Tick “add another period” to keep going, otherwise continue to the next step.",
+        "data": {
+          "start": "Start date",
+          "end": "End date",
+          "amount": "Amount",
+          "amount_repay": "Monthly repayment",
+          "amount_rent": "Monthly rent",
+          "amount_sublet": "Monthly sublet income",
+          "amount_property": "Monthly amount",
+          "amount_heating": "Total for the period",
+          "more": "Add another period (when the amount changes)"
+        },
+        "data_description": {
+          "start": "Format YYYY-MM-DD.",
+          "end": "Leave empty for ongoing (no end date).",
+          "amount_repay": "Amount repaid per month within this period.",
+          "amount_rent": "Rent paid per month within this period.",
+          "amount_sublet": "Rent received per month within this period.",
+          "amount_property": "Property fee per month within this period.",
+          "amount_heating": "Total heating fee for this period, spread over its days.",
+          "more": "Shows this form again so you can append the next period (e.g. after a rate change)."
+        }
+      },
+      "period_edit": {
+        "title": "Edit period",
+        "description": "Select the period to edit.",
+        "data": {
+          "index": "Period"
+        }
+      },
+      "period_edit_form": {
+        "title": "Edit period",
+        "data": {
+          "start": "Start date",
+          "end": "End date",
+          "amount": "Amount",
+          "amount_repay": "Monthly repayment",
+          "amount_rent": "Monthly rent",
+          "amount_sublet": "Monthly sublet income",
+          "amount_property": "Monthly amount",
+          "amount_heating": "Total for the period"
+        },
+        "data_description": {
+          "start": "Format YYYY-MM-DD.",
+          "end": "Leave empty for ongoing (no end date).",
+          "amount_repay": "Amount repaid per month within this period.",
+          "amount_rent": "Rent paid per month within this period.",
+          "amount_sublet": "Rent received per month within this period.",
+          "amount_property": "Property fee per month within this period.",
+          "amount_heating": "Total heating fee for this period, spread over its days."
+        }
+      },
+      "period_del": {
+        "title": "Delete period",
+        "description": "Select the period to delete.",
+        "data": {
+          "index": "Period"
+        }
+      },
+      "extra": {
+        "title": "Other parameters",
+        "description": "Parameters differ per expense type: loans have down payment, loan term, outstanding principal and repayment day; rent/parking have an agency or custody fee; property fee has a paid-until month; heating fee has none.",
+        "data": {
+          "upfront": "Down payment",
+          "loan_months": "Loan term",
+          "remaining": "Outstanding principal",
+          "repay_day": "Repayment day",
+          "balance_date": "Outstanding principal as of",
+          "agency_fee": "Agency fee",
+          "custody_fee": "Custody fee",
+          "paid_until": "Paid until"
+        },
+        "data_description": {
+          "upfront": "Down payment, amortised over the loan term.",
+          "loan_months": "Total number of monthly instalments.",
+          "remaining": "Outstanding principal right now.",
+          "repay_day": "Day of the month, e.g. 21. Shorter months use their last day.",
+          "balance_date": "The date this outstanding principal was read; every repayment day after it deducts one instalment automatically.",
+          "agency_fee": "Agency fee, amortised over the period.",
+          "custody_fee": "Custody fee, amortised over the period.",
+          "paid_until": "Format YYYY-MM, e.g. 2026-12."
+        }
+      },
+      "delete": {
+        "title": "Delete item",
+        "description": "Select the item to delete.",
+        "data": {
+          "index": "Item"
+        }
+      },
+      "delete_confirm": {
+        "title": "Confirm deletion",
+        "description": "The entity and its snapshot will be removed. Continue?",
+        "data": {
+          "confirm": "Confirm deletion"
+        }
+      }
+    },
+    "error": {
+      "end_before_start": "The end date cannot be earlier than the start date.",
+      "name_exists": "This name already exists, please pick another one.",
+      "invalid_month": "The month must be in YYYY-MM format, e.g. 2026-10.",
+      "last_period": "At least one period must be kept.",
+      "date_required": "Please select a start date.",
+      "invalid_date": "Invalid date, please select a valid date."
+    }
+  }
+}
