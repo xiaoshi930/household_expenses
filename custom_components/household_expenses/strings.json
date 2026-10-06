@@ -175,7 +175,7 @@
       "invalid_month": "The month must be in YYYY-MM format, e.g. 2026-10.",
       "last_period": "At least one period must be kept.",
       "date_required": "Please select a start date.",
-      "invalid_date": "Invalid date, please select a valid date."
+      "invalid_date": "Invalid date, please enter a valid date (e.g. 2026-01-31)."
     }
   }
 }

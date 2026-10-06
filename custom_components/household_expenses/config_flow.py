@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import copy
 import logging
+import re
 from datetime import date, datetime
 from typing import Any
 from uuid import uuid4
@@ -76,30 +77,66 @@ ERROR_INVALID_DATE = "invalid_date"
 # ----------------------------------------------------------------------
 # 选择器 / 表单小工具
 # ----------------------------------------------------------------------
-class _DateSelector(selector.DateSelector):
-    """日期选择器，但**允许留空**。
+def _parse_date_text(text: str) -> str | None:
+    """宽松解析日期文本，成功返回 ``YYYY-MM-DD``，失败返回 ``None``。
 
-    HA 自带的 ``DateSelector.__call__`` 直接调 ``cv.date()``，而 ``cv.date("")``
-    会抛 ``vol.Invalid("Could not parse date")``。前端把清空的日期控件**提交为空
-    字符串**（不是省略这个键），于是用户只是想把「结束日期」清空，就会在表单里
-    看到一句英文 "Could not parse date"（HA 会把 ``error_message`` 原样当成
-    翻译键，所以这句话根本没有对应译文）。
-
-    这里把 ``None`` / 空白串统一归一成 ``""``，由流程自己决定「是否必填 / 是否
-    算长期」，报错时也能给出中文提示。序列化行为与父类完全一致（仍是日期选择器），
-    所以不会踩到 ``voluptuous_serialize`` 的坑。
+    接受 ``2026-01-31`` / ``2026/1/31`` / ``2026.1.31`` / ``2026年1月31日`` /
+    ``20260131`` 等写法（8 位紧凑写法要求月份、日期两位）。
     """
+    m = re.fullmatch(r"(\d{4})\D+(\d{1,2})\D+(\d{1,2})\D*", text) or re.fullmatch(
+        r"(\d{4})(\d{2})(\d{2})", text
+    )
+    if not m:
+        return None
+    year, month, day = (int(g) for g in m.groups())
+    try:
+        return date(year, month, day).isoformat()
+    except ValueError:
+        return None
+
+
+class _DateSelector(selector.TextSelector):
+    """可**手工输入**的日期控件（原生 ``type="date"``），允许留空。
+
+    HA 2025.10 起自带的 ``DateSelector`` 前端是「只读输入框 + cally 日历
+    弹窗」：输入框不收键盘，弹窗里也只有左右翻月箭头（日历图标是「跳到
+    今天」），低版本「点年份快速选年」的界面没有了。
+
+    这里换成 ``TextSelector(type="date")``：前端渲染成原生
+    ``<input type="date">`` —— 点击年/月/日分段即可直接敲数字，桌面
+    Chrome/Edge 与 HA App 自带的日历选择器都支持快速跳年。
+
+    ``__call__`` 在父类的 ``str()`` 强转**之前**做归一化（父类会把 ``None``
+    变成字符串 ``"None"`` 放行）：
+    - ``None`` / 空白串 → ``""``（留空 = 未填 / 长期，由流程自己决定是否报错）；
+    - ``date`` / ``datetime``（YAML 导入等路径）→ ``YYYY-MM-DD``；
+    - 其余按 :func:`_parse_date_text` 宽松解析并归一成 ``YYYY-MM-DD``，
+      解析不了 → ``invalid_date``（翻译键，前端显示中文提示）。
+
+    序列化行为与父类 TextSelector 完全一致，voluptuous_serialize 不受影响。
+    """
+
+    def __init__(self) -> None:
+        super().__init__(
+            selector.TextSelectorConfig(type=selector.TextSelectorType.DATE)
+        )
 
     def __call__(self, data: Any) -> Any:
         if data is None:
             return ""
-        if isinstance(data, str) and not data.strip():
+        if isinstance(data, datetime):  # datetime 是 date 的子类，必须先判
+            return data.strftime("%Y-%m-%d")
+        if isinstance(data, date):
+            return data.isoformat()
+        if not isinstance(data, str):
+            raise vol.Invalid(ERROR_INVALID_DATE)
+        text = data.strip()
+        if not text:
             return ""
-        try:
-            return super().__call__(data)
-        except vol.Invalid as err:
-            # 用翻译键代替英文原文，前端才能显示中文
-            raise vol.Invalid(ERROR_INVALID_DATE) from err
+        parsed = _parse_date_text(text)
+        if parsed is None:
+            raise vol.Invalid(ERROR_INVALID_DATE)
+        return parsed
 
 
 def _type_selector() -> selector.SelectSelector:
