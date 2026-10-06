@@ -31,6 +31,10 @@ CONF_BALANCE_DATE = "balance_date"
 CONF_AGENCY_FEE = "agency_fee"
 CONF_CUSTODY_FEE = "custody_fee"
 CONF_PAID_UNTIL = "paid_until"
+# 取暖费「已缴金额」：这个采暖季已经交了多少钱。
+# 「剩余金额」= 已缴金额 − 截至今天已经摊分掉的应缴部分（按天摊分）。
+# 留空（老配置）时该项的剩余金额仍是 0，语义不变。
+CONF_PAID_AMOUNT = "paid_amount"
 
 # ----------------------------------------------------------------------
 # 收支方向
@@ -140,7 +144,7 @@ ITEM_TYPES: dict[str, dict] = {
         "amount_key": "amount_heating",
         "amount_label": "期间总金额",
         "onetime": None,
-        "has_remaining": False,
+        "has_remaining": True,
     },
 }
 

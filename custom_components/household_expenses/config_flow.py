@@ -28,6 +28,7 @@ from .const import (
     CONF_ITEM_TYPE,
     CONF_ITEMS,
     CONF_LOAN_MONTHS,
+    CONF_PAID_AMOUNT,
     CONF_PAID_UNTIL,
     CONF_PERIOD_AMOUNT,
     CONF_PERIOD_END,
@@ -38,6 +39,7 @@ from .const import (
     CONF_UPFRONT,
     DOMAIN,
     ITEM_TYPES,
+    KIND_HEATING,
     KIND_LOAN,
     KIND_PROPERTY,
     NAME,
@@ -137,6 +139,31 @@ class _DateSelector(selector.TextSelector):
         if parsed is None:
             raise vol.Invalid(ERROR_INVALID_DATE)
         return parsed
+
+
+class _OptionalMoneySelector(selector.NumberSelector):
+    """可留空的金额控件（留空 = 未填）。
+
+    父类的数字校验会把空串 / ``None`` 判成非法（用户清空输入框就提交不了），
+    这里在调用父类之前把两者统一归一成 ``None``。序列化行为与父类一致。
+    """
+
+    def __init__(self) -> None:
+        super().__init__(
+            selector.NumberSelectorConfig(
+                min=0,
+                step=0.01,
+                mode=selector.NumberSelectorMode.BOX,
+                unit_of_measurement="元",
+            )
+        )
+
+    def __call__(self, data: Any) -> Any:
+        if data is None:
+            return None
+        if isinstance(data, str) and not data.strip():
+            return None
+        return super().__call__(data)
 
 
 def _type_selector() -> selector.SelectSelector:
@@ -359,6 +386,20 @@ def _extra_schema(item_type: str, item: dict[str, Any] | None = None) -> vol.Sch
             ] = selector.TextSelector(
                 selector.TextSelectorConfig(type=selector.TextSelectorType.TEXT)
             )
+        elif kind == KIND_HEATING:
+            # 「已缴金额」：这个采暖季已经交了多少钱。
+            # 剩余金额 = 已缴金额 − 截至今天按天摊分掉的应缴部分；留空 = 不显示。
+            paid = item.get(CONF_PAID_AMOUNT)
+            fields[
+                vol.Optional(
+                    CONF_PAID_AMOUNT,
+                    description={
+                        "suggested_value": (
+                            None if paid in (None, "") else _as_float(paid)
+                        )
+                    },
+                )
+            ] = _OptionalMoneySelector()
 
     if not fields:
         return None
@@ -777,6 +818,16 @@ class HouseholdExpensesOptionsFlow(OptionsFlow):
                     errors[CONF_PAID_UNTIL] = ERROR_INVALID_MONTH
                 else:
                     payload[CONF_PAID_UNTIL] = raw_month
+            if (ITEM_TYPES.get(item_type) or {}).get("kind") == KIND_HEATING:
+                # 「已缴金额」留空 = 未填：必须同时删掉草稿里的旧值，
+                # 否则 draft.update(payload) 会沿用上一次录入的值（清空无效）。
+                raw_paid = payload.pop(CONF_PAID_AMOUNT, None)
+                draft.pop(CONF_PAID_AMOUNT, None)
+                if not (
+                    raw_paid is None
+                    or (isinstance(raw_paid, str) and not raw_paid.strip())
+                ):
+                    payload[CONF_PAID_AMOUNT] = round(_as_float(raw_paid), 2)
             if not errors:
                 draft.update(payload)
                 self._draft = draft

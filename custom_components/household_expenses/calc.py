@@ -19,6 +19,8 @@
     「还款日」即每月固定扣款日号（1-31，当月不足取月末），每到一个还款日
     就扣掉当期月供。未配置还款日或基准日时退回静态余额。
   - 物业费：已交金额(至缴纳截止月份) - 应缴金额(至当前月)，未交为负
+  - 取暖费：已缴金额 - 截至今天应缴金额（**按天摊分**，见 ``heating_accrued``），
+    未缴或已缴不足为负。未填「已缴金额」时为 0（老配置语义不变）。
   - 其余：0
 
 * **数据覆盖区间**
@@ -53,6 +55,7 @@ from .const import (
     CONF_ITEM_NAME,
     CONF_ITEM_TYPE,
     CONF_LOAN_MONTHS,
+    CONF_PAID_AMOUNT,
     CONF_PAID_UNTIL,
     CONF_PERIOD_AMOUNT,
     CONF_PERIOD_END,
@@ -438,6 +441,29 @@ def _sum_months(
     return round(total, 2)
 
 
+def heating_accrued(periods: list[tuple[date, date, float]], today: date) -> float:
+    """截至 ``today``（**含当天**）取暖费已经摊分掉的应缴金额。
+
+    口径与 :func:`monthly_primary` / :func:`daily_primary` 的取暖费分支完全
+    一致：每一天的金额 = 期间总金额 ÷ 该期间天数，所以「已经过去的部分」
+    = Σ 各期间在 ``[start, min(end, today)]`` 内的天数占比 × 期间总金额。
+
+    * 期间尚未开始（``today < start``）→ 不计入；
+    * 期间已经走完 → 计全额；
+    * 「长期」期间（无结束日期）同样按天摊分（占比自然很小）。
+    """
+    total = 0.0
+    for start, end, amount in periods:
+        if today < start:
+            continue
+        span = (end - start).days + 1
+        if span <= 0:
+            continue
+        covered = (min(end, today) - start).days + 1
+        total += amount * covered / span
+    return round(total, 2)
+
+
 def remaining_value(item: dict[str, Any], periods: list[tuple[date, date, float]], today: date) -> float:
     """「剩余金额」属性。"""
     kind = kind_of(item)
@@ -453,6 +479,13 @@ def remaining_value(item: dict[str, Any], periods: list[tuple[date, date, float]
         paid = _sum_months(periods, start_ym, paid_until, kind)
         due = _sum_months(periods, start_ym, current_ym, kind)
         return round(paid - due, 2)
+    if kind == KIND_HEATING:
+        # 已缴金额 − 截至今天应缴（按天摊分）。
+        # 未填「已缴金额」（老配置）→ 保持 0，语义完全不变。
+        raw_paid = item.get(CONF_PAID_AMOUNT)
+        if raw_paid is None or raw_paid == "":
+            return 0.0
+        return round(_to_float(raw_paid) - heating_accrued(periods, today), 2)
     return 0.0
 
 
